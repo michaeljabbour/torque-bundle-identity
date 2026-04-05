@@ -80,14 +80,26 @@ api:
       path: /api/identity/sign_up
       handler: signUp
       auth: false
+      validate:
+        body:
+          email: { required: true, type: string, pattern: "email" }
+          password: { required: true, type: string, min_length: 6 }
+          name: { required: true, type: string }
     - method: POST
       path: /api/identity/sign_in
       handler: signIn
       auth: false
+      validate:
+        body:
+          email: { required: true, type: string }
+          password: { required: true, type: string }
     - method: POST
       path: /api/identity/refresh
       handler: refreshToken
       auth: false
+      validate:
+        body:
+          refresh_token: { required: true, type: string }
     - method: GET
       path: /api/identity/me
       handler: me
