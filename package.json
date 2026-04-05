@@ -1,0 +1,20 @@
+{
+  "name": "@torquedev/bundle-identity",
+  "version": "0.1.0",
+  "description": "Authentication, sessions, JWT lifecycle",
+  "type": "module",
+  "main": "logic.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/torque-framework/torque-bundle-identity.git"
+  },
+  "devDependencies": {
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0",
+    "uuid": "^10.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

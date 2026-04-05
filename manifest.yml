@@ -1,0 +1,99 @@
+name: identity
+version: "1.0.0"
+description: "Authentication, sessions, JWT lifecycle"
+
+schema:
+  tables:
+    users:
+      columns:
+        id: { type: uuid, primary: true }
+        email: { type: string, null: false, unique: true }
+        password_digest: { type: string, null: false }
+        name: { type: string }
+        role: { type: string, default: "user" }
+        created_at: { type: timestamp }
+        updated_at: { type: timestamp }
+    refresh_tokens:
+      columns:
+        id: { type: uuid, primary: true }
+        user_id: { type: uuid, null: false }
+        jti: { type: string, null: false, unique: true }
+        expires_at: { type: timestamp }
+        created_at: { type: timestamp }
+        updated_at: { type: timestamp }
+    revoked_tokens:
+      columns:
+        id: { type: uuid, primary: true }
+        jti: { type: text, required: true }
+        user_id: { type: text, required: true }
+        revoked_at: { type: text, required: true }
+        expires_at: { type: text, required: true }
+
+events:
+  publishes:
+    - name: identity.user.authenticated
+      schema: { user_id: uuid, email: string }
+    - name: identity.session.created
+      schema: { user_id: uuid, jti: string }
+    - name: identity.auth.failed
+      schema: { email: string, reason: string, timestamp: string }
+    - name: identity.session.revoked
+      schema: { user_id: uuid, revoked_count: integer }
+  subscribes: []
+
+intents:
+  - RevokeAccess
+
+interfaces:
+  queries:
+    - getUser
+    - validateToken
+    - revokeUserSessions
+  contracts:
+    getUser:
+      description: "Retrieve a user by ID"
+      input: { userId: { type: uuid, required: true } }
+      output:
+        type: object
+        nullable: true
+        shape: { id: uuid, email: string, name: string, role: string }
+    validateToken:
+      description: "Validate a JWT token and return the user"
+      input: { token: { type: string, required: true } }
+      output:
+        type: object
+        nullable: true
+        shape: { id: uuid, email: string, name: string, role: string }
+    revokeUserSessions:
+      description: "Revoke all active sessions for a user"
+      input: { userId: { type: uuid, required: true } }
+      output:
+        type: object
+        shape: { revoked: integer }
+
+depends_on: []
+optional_deps: []
+
+api:
+  routes:
+    - method: POST
+      path: /api/identity/sign_up
+      handler: signUp
+      auth: false
+    - method: POST
+      path: /api/identity/sign_in
+      handler: signIn
+      auth: false
+    - method: POST
+      path: /api/identity/refresh
+      handler: refreshToken
+      auth: false
+    - method: GET
+      path: /api/identity/me
+      handler: me
+      auth: true
+
+ui:
+  routes:
+    - { path: /login, component: login-page }
+  navigation: []
