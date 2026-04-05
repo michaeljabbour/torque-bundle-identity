@@ -71,19 +71,10 @@ export default class Identity {
   }
 
   signUp({ email, password, name }) {
-    // Fix 1: input validation before any hashing or DB work
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return { error: 'Valid email required' };
-    }
-    if (!password || typeof password !== 'string' || password.length < 8) {
-      return { error: 'Password must be at least 8 characters' };
-    }
-    if (!name || typeof name !== 'string' || name.trim().length === 0) {
-      return { error: 'Name is required' };
-    }
+    // Structural validation (email format, password presence, name presence) now handled by manifest validate: block
 
     const existing = this.data.query('users', { email });
-    // Fix 4: generic message — don't confirm whether the email is registered
+    // Generic message — don't confirm whether the email is registered
     if (existing.length > 0) return { error: 'Unable to create account. Please try a different email or sign in.' };
 
     const passwordDigest = bcrypt.hashSync(password, 10);

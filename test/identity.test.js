@@ -36,23 +36,8 @@ describe('Identity bundle', () => {
       assert.ok(result.error.includes('Unable to create account'));
     });
 
-    it('rejects invalid email', () => {
-      const result = identity.signUp({ email: 'notanemail', password: 'password123', name: 'Test' });
-      assert.ok(result.error);
-      assert.ok(result.error.includes('Valid email'));
-    });
-
-    it('rejects password shorter than 8 characters', () => {
-      const result = identity.signUp({ email: 'test@test.com', password: 'short', name: 'Test' });
-      assert.ok(result.error);
-      assert.ok(result.error.includes('8 characters'));
-    });
-
-    it('rejects missing name', () => {
-      const result = identity.signUp({ email: 'test@test.com', password: 'password123', name: '' });
-      assert.ok(result.error);
-      assert.ok(result.error.includes('Name is required'));
-    });
+    // Invalid email, short password, missing name are structural validations
+    // now handled by the manifest validate: block — not tested inline here.
 
     it('publishes identity.user.authenticated event', () => {
       identity.signUp({ email: 'test@test.com', password: 'password123', name: 'Tester' });
